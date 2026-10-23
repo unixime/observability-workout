@@ -1,0 +1,151 @@
+openapi: '3.0.3'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /tenants:
+    get:
+      summary: Get all tenants
+      operationId: getTenants
+      responses:
+        '200':
+          description: A list of tenants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/tenant'
+    post:
+      summary: Register a new tenant
+      operationId: createTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tenant'
+      responses:
+        '201':
+          description: Tenant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tenant'
+        '400':
+          description: Invalid request body
+        '409':
+          description: Tenant already exists
+  /tenants/search:
+    get:
+      summary: Find tenants by id, name or lastname
+      operationId: searchTenants
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+          description: The ID of the tenant
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The name of the tenant
+        - name: lastname
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The last name of the tenant
+      responses:
+        '200':
+          description: Tenants matching the given criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/tenant'
+        '404':
+          description: No tenant found
+  /tenants/{id}:
+    put:
+      summary: Update a tenant
+      operationId: updateTenant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The ID of the tenant to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tenant'
+      responses:
+        '200':
+          description: Tenant updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tenant'
+        '400':
+          description: Invalid tenant ID or request body
+        '404':
+          description: Tenant not found
+        '409':
+          description: Another tenant with the same name and lastname already exists
+    delete:
+      summary: Delete a tenant
+      operationId: deleteTenant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The ID of the tenant to delete
+      responses:
+        '204':
+          description: Tenant deleted
+        '400':
+          description: Invalid tenant ID
+        '404':
+          description: Tenant not found
+components:
+  schemas:
+    tenant:
+      type: object
+      required:
+        - name
+        - lastname
+      properties:
+        name:
+          type: string
+          description: The name of the tenant
+          example: "Tenant Name"
+        lastname:
+          type: string
+          description: The last name of the tenant
+          example: "Tenant Lastname"
+        age:
+          type: integer
+          description: The age of the tenant
+          example: 30
+        id:
+          type: integer
+          format: int32
+          readOnly: true
+          description: The ID of the tenant
+          example: 1
+
