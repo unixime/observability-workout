@@ -8,9 +8,14 @@ services:
       - "8080:8080"
     environment:
       DATABASE_URL: host=db user=postgres password=postgres dbname=condominium port=5432 sslmode=disable
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_METRIC_EXPORT_INTERVAL: "15000"
     depends_on:
       db:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
     restart: on-failure
 
   db:
